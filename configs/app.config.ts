@@ -94,8 +94,8 @@ interface GuildConfig {
 }
 
 interface RoleConfig {
-    ticket_moderator: string;
-    admin_moderator: string;
-    report_moderator: string;
+    ticket_moderator: string[];
+    admin_moderator: string[];
+    report_moderator: string[];
     urlchecker_moderator: string;
 }

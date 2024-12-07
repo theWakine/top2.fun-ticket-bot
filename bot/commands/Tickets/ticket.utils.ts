@@ -18,24 +18,27 @@ export async function ThreadRoleAdd(interaction, thread, addRole: string) {
     if (!config) {
         await initializeConfig();
     }
-    const role = interaction.guild?.roles.cache.get(addRole);
-    if (role) {
-        await role.guild.members.fetch();
-        logger.info(`Role found: ${role.name} with ${role.members.size} members.`);
-        if (role.members.size > 0) {
-            for (const member of role.members.values()) {
-                try {
-                    await thread.members.add(member.id);
-                    logger.info(`Added member ${member.id} to thread ${thread.id}`);
-                } catch (error) {
-                    logger.error(`Failed to add member ${member.id} to thread ${thread.id}: ${error.message}`);
+    const roles = Array.isArray(addRole) ? addRole.map(roleId => interaction.guild?.roles.cache.get(roleId)) : [interaction.guild?.roles.cache.get(addRole)];
+    
+    for (const role of roles) {
+        if (role) {
+            await role.guild.members.fetch();
+            logger.info(`Role found: ${role.name} with ${role.members.size} members.`);
+            if (role.members.size > 0) {
+                for (const member of role.members.values()) {
+                    try {
+                        await thread.members.add(member.id);
+                        logger.info(`Added member ${member.id} to thread ${thread.id}`);
+                    } catch (error) {
+                        logger.error(`Failed to add member ${member.id} to thread ${thread.id}: ${(error as Error).message}`);
+                    }
                 }
+            } else {
+                logger.warning("Role found but no members in the role.");
             }
         } else {
-            logger.warning("Role found but no members in the role.");
+            logger.error("Role not found for add.");
         }
-    } else {
-        logger.error("Role not found for add.");
     }
 }
 
