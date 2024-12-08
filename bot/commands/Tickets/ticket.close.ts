@@ -22,7 +22,7 @@ export async function ticketClose(client, interaction, database) {
         return false;
     }
 
-    const closed_embed = await createEmbed(client, await ReplaceKeys(config.Thread.UI.Texts.ticket_close_message, {user: `<@${ticket_channel.userID}>`, createdAt: `<t:${ticket_channel.createdAt}>`, updatedAt: `<t:${ticket_channel.updatedAt}>`}));
+    const closed_embed = await createEmbed(client, await ReplaceKeys(config.Thread.UI.Texts.ticket_close_message, {user: `<@${interaction.user.id}>`, createdAt: `<t:${ticket_channel.createdAt}>`, updatedAt: `<t:${ticket_channel.updatedAt}>`}));
     const thread = client.channels.cache.get(ticket_channel["ticketID"])
 
     if (thread) {

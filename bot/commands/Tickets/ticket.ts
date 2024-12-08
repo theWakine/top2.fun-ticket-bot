@@ -81,12 +81,7 @@ export async function setupTicketSystem(client: any) {
                 }
 
                 if (interaction.customId === config.Thread.UI.Buttons.close_ticket_button.customId) {
-                    const close_ticket = await database.getTicketUserID({ userID: interaction.user.id });
-                    if (close_ticket) {
-                        await ticketClose(client, interaction, database);
-                    } else {
-                        await interaction.reply({ content: `Тикет не найден или вы не являетесь его создателем!`, ephemeral: true });
-                    }
+                    await ticketClose(client, interaction, database);
                 }
             }
         });
