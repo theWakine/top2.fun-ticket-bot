@@ -1,4 +1,4 @@
-import { setupTicketSystem } from "@bot/commands/Tickets/ticket";
+import { setupTicketSystem } from "../commands/Tickets/ticket";
 import { Logger } from "../../src/modules/logger/Logger";
 import Database from "../../src/database/database";
 import { deployCommandsInit } from "./on/command/deploy.init";
