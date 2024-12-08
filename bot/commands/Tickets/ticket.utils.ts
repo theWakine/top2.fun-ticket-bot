@@ -19,15 +19,22 @@ export async function ThreadRoleAdd(interaction, thread, addRole: string[]) {
     }
     const roles = Array.isArray(addRole) ? addRole.map(roleId => interaction.guild?.roles.cache.get(roleId)) : [interaction.guild?.roles.cache.get(addRole)];
     
+    const addedMembers = Array.from(thread.members.cache.keys());
+
     for (const role of roles) {
         if (role) {
             await role.guild.members.fetch();
             logger.info(`Role found: ${role.name} with ${role.members.size} members.`);
             if (role.members.size > 0) {
                 for (const member of role.members.values()) {
+                    if (addedMembers.includes(member.id)) {
+                        logger.info(`Member ${member.id} is already in the thread ${thread.id}, skipping.`);
+                        continue;
+                    }
                     try {
                         await thread.members.add(member.id);
                         logger.info(`Added member ${member.id} to thread ${thread.id}`);
+                        addedMembers.push(member.id);
                     } catch (error) {
                         logger.error(`Failed to add member ${member.id} to thread ${thread.id}: ${(error as Error).message}`);
                     }

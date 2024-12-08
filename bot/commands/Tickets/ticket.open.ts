@@ -44,14 +44,14 @@ export async function ticketOpen(client, interaction, database, category: string
                 name: await ReplaceKeys(config.Thread.Arguments.name_default, { user: interaction.user.username, category: category }),
                 autoArchiveDuration: config.Thread.Arguments.auto_archive_duration,
                 type: ChannelType.PrivateThread as any,
-                reason: await ReplaceKeys(config.Thread.Arguments.reason, { user: `<@${interaction.user.id}>`, category: config.Thread.Categories.ticket })
+                reason: await ReplaceKeys(config.Thread.Arguments.reason, { user: `<@${interaction.user.id}>`, category: config.Thread.Categories.ticket }),
             });
+
             thread.setLocked(true);
             const ticket_create_embed = await createEmbed(client, await ReplaceKeys(config.Thread.UI.Texts.ticket_create_message, { user: `<@${interaction.user.id}>`, channel: `<#${thread.id}>` }));
             await interaction.reply({embeds: [ticket_create_embed], ephemeral: true});
 
             await thread.members.add(interaction.user.id);
-            await ThreadRoleAdd(interaction, thread, moder_role);
 
             await database.createTicket({ userID: interaction.user.id, ticketID: thread.id, createdAt: new Date(), updatedAt: new Date(), status: "open", role: moder_role });
 
@@ -67,6 +67,7 @@ export async function ticketOpen(client, interaction, database, category: string
             } else if (category === "admin") {
                 ticket_message_embed = await createEmbed(client, await ReplaceKeys(config.Thread.UI.Texts.admin_ticket_message, { user: `<@${interaction.user.id}>` }));
             }
+            await ThreadRoleAdd(interaction, thread, moder_role);
             thread.setLocked(false);
             await thread.send({ embeds: [ticket_message_embed], components: [await RowBuilder([closeButton])] });
 
