@@ -1,12 +1,11 @@
-import { Logger } from "../../../src/modules/logger/Logger";
-import { loadConfig, AppConfig } from "../../../configs/app.config";
-import { TicketInterface } from './ticket.interface';
-import { ButtonBuilder, Interaction, TextChannel } from "discord.js";
-import { createButton, replaceButtonStyle, RowBuilder } from "../../../src/modules/discord/utils/button";
-import { createEmbed } from "../../../src/modules/discord/utils/embed";
-import { ticketOpen } from "./ticket.open";
-import Database from "../../../src/database/database";
-import { ticketClose } from "./ticket.close";
+import { Logger } from "@/modules/logger/Logger";
+import { loadConfig, AppConfig } from "@/configs/app.config";
+import { Interaction, TextChannel } from 'discord.js';
+import { createButton, RowBuilder } from "@/modules/discord/utils/button";
+import { createEmbed } from "@/modules/discord/utils/embed";
+import { ticketOpen } from "@/bot/commands/Tickets/ticket.open";
+import Database from "@/database/database";
+import { ticketClose } from "@/bot/commands/Tickets/ticket.close";
 const logger = new Logger("logs/bot/commands/ticket.log");
 
 const database = new Database();
@@ -14,8 +13,9 @@ const database = new Database();
 export async function setupTicketSystem(client: any) {
     const config: AppConfig = await loadConfig();
     const channel = await client.channels.fetch(config.Client.Guild.init_channel);
-    const messages = await channel?.messages.fetch({ limit: 1 });
-    const message = messages?.first();
+    
+    const existingMessage = await database.getMessageByChannelId(channel.id);
+
     const embed_setup = await createEmbed(client, config.Thread.UI.Texts.init_embed_text);
     const button_setup = await createButton(
         config.Thread.UI.Buttons.open_ticket_button.customId,
@@ -36,12 +36,12 @@ export async function setupTicketSystem(client: any) {
         config.Thread.UI.Buttons.admin_open_button.style
     );
 
-    if (message) {
+    if (existingMessage) {
         logger.info(`Ticket system already setup`);
-        await message.edit({embeds: [embed_setup], components: [await RowBuilder([button_setup, button_report_setup, button_admin_setup])]});
     } else {
         logger.info(`Setting up ticket system...`);
-        await channel?.send({embeds: [embed_setup], components: [await RowBuilder([button_setup, button_report_setup, button_admin_setup])]});
+        const message = await channel?.send({embeds: [embed_setup], components: [await RowBuilder([button_setup, button_report_setup, button_admin_setup])]});
+        await database.createMessage({ channelId: channel.id, messageId: message.id });
     }
 
     try {

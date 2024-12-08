@@ -1,7 +1,7 @@
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
-import { Logger } from '../../../../src/modules/logger/Logger';
+import { Logger } from '@/modules/logger/Logger';
 
 const logger = new Logger('logs/app.log');
 

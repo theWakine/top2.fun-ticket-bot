@@ -1,7 +1,7 @@
-import Database from '../../../../src/database/database';
-import { Logger } from '../../../../src/modules/logger/Logger';
-import { loadConfig, AppConfig } from '../../../../configs/app.config';
-import { createEmbed } from "../../../../src/modules/discord/utils/embed";
+import Database from '@/database/database';
+import { Logger } from '@/modules/logger/Logger';
+import { loadConfig, AppConfig } from '@/configs/app.config';
+import { createEmbed } from "@/modules/discord/utils/embed";
 
 const logger = new Logger('logs/commands/urlchecker.log');
 let config = loadConfig();

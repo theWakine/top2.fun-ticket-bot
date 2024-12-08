@@ -1,8 +1,8 @@
-import { setupTicketSystem } from "@bot/commands/Tickets/ticket";
-import { Logger } from "../../src/modules/logger/Logger";
-import Database from "../../src/database/database";
-import { deployCommandsInit } from "./on/command/deploy.init";
-import { deployCommands } from "./on/command/deploy";
+import { setupTicketSystem } from "@/bot/commands/Tickets/ticket";
+import { Logger } from "@/modules/logger/Logger";
+import Database from "@/database/database";
+import { deployCommandsInit } from "@/bot/events/on/command/deploy.init";
+import { deployCommands } from "@/bot/events/on/command/deploy";
 
 const logger = new Logger('logs/app.log');
 

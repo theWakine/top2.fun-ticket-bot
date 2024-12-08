@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
-import { loadConfig } from "../../../../configs/app.config";
-import Database from '../../../../src/database/database';
+import { loadConfig } from "@/configs/app.config";
+import Database from '@/database/database';
 
 const database = new Database();
 const config = loadConfig();

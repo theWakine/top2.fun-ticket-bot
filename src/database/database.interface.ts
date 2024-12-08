@@ -30,3 +30,8 @@ export interface URLRemoveInterface {
 export interface URLGetInterface {
     url: string;
 }
+
+export interface MessageCreateInterface {
+    channelId: string;
+    messageId: string;
+}

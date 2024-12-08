@@ -1,0 +1,45 @@
+{
+    "compilerOptions": {
+      "lib": [
+        "es6",
+        "dom"
+      ],
+    //   "allowJs": true,
+    //   "skipLibCheck": true,
+    //   "strict": true,
+    //   "noEmit": true,
+    //   "esModuleInterop": true,
+    //   "module": "esnext",
+    //   "moduleResolution": "bundler",
+    //   "resolveJsonModule": true,
+    //   "isolatedModules": true,
+    //   "jsx": "preserve",
+    //   "incremental": true,
+      "paths": {
+        "@/src/*": [
+          "./src/*"
+        ],
+        "@/bot/*": [
+          "./bot/*"
+        ],
+        "@/configs/*": [
+          "./configs/*"
+        ],
+        "@/database/*": [
+          "./src/database/*"
+        ],
+        "@/modules/*": [
+          "./src/modules/*"
+        ]
+      },
+      "target": "es6",
+      "moduleResolution": "node"
+    },
+    "include": [
+      "**/*.ts",
+    ],
+
+    "exclude": [
+      "node_modules"
+    ]
+  }

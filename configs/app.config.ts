@@ -1,4 +1,3 @@
-import { ColorResolvable } from 'discord.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -97,5 +96,6 @@ interface RoleConfig {
     ticket_moderator: string[];
     admin_moderator: string[];
     report_moderator: string[];
-    urlchecker_moderator: string;
+    urlchecker_moderator: string[];
+    ticket_admin: string[];
 }

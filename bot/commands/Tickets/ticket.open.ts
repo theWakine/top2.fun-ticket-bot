@@ -1,11 +1,9 @@
-import { Interaction, ButtonBuilder, Client, ChannelType, TextChannel, NewsChannel, ButtonStyle, ThreadChannel } from "discord.js";
-import { Logger } from "../../../src/modules/logger/Logger";
-import { TicketInterface, UserInterface, ChannelInterface } from './ticket.interface';
-import { loadConfig, AppConfig } from "../../../configs/app.config";
-import { createEmbed } from "../../../src/modules/discord/utils/embed";
-import { ReplaceKeys, ThreadRoleAdd } from "./ticket.utils";
-import Database from "../../../src/database/database";
-import { RowBuilder } from "../../../src/modules/discord/utils/button";
+import { ButtonBuilder, ChannelType, TextChannel, ButtonStyle } from "discord.js";
+import { Logger } from "@/modules/logger/Logger";
+import { loadConfig, AppConfig } from "@/configs/app.config";
+import { createEmbed } from "@/modules/discord/utils/embed";
+import { ReplaceKeys, ThreadRoleAdd } from "@/bot/commands/Tickets/ticket.utils";
+import { RowBuilder } from "@/modules/discord/utils/button";
 
 export async function ticketOpen(client, interaction, database, category: string) {
     const logger = new Logger("logs/bot/commands/ticket.log");
@@ -27,7 +25,7 @@ export async function ticketOpen(client, interaction, database, category: string
 
         if (textChannel && textChannel.isTextBased()) {
             const textChannelAsText = textChannel as TextChannel;
-            let moder_role: string;
+            let moder_role: string[];
             if (category === "ticket") {
                 category = config.Thread.Categories.ticket;
                 moder_role = config.Client.Role.ticket_moderator;
@@ -39,7 +37,7 @@ export async function ticketOpen(client, interaction, database, category: string
                 moder_role = config.Client.Role.admin_moderator;
             } else {
                 category = config.Thread.Categories.ticket;
-                moder_role = "";
+                moder_role = [""];
             }
 
             const thread = await textChannelAsText.threads.create({

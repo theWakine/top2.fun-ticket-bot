@@ -1,6 +1,7 @@
-import sqlite3 from "sqlite3";
-import { TicketCreateInterface, TicketGetInterface, TicketGetFromTicketIDInterface, URLCreateInterface, URLGetInterface, URLRemoveInterface } from "./database.interface";
-import { Logger } from "../modules/logger/Logger";
+import * as sqlite3 from "sqlite3";
+import { TicketCreateInterface, TicketGetInterface, TicketGetFromTicketIDInterface, URLCreateInterface, URLGetInterface, URLRemoveInterface, MessageCreateInterface } from "./database.interface";
+import { Logger } from "@/modules/logger/Logger";
+import * as dotenv from "dotenv";
 
 const logger = new Logger("logs/database/database.log");
 
@@ -50,6 +51,14 @@ class Database {
                 userID TEXT NOT NULL
             )
         `;
+
+        const createTableQueryMessage = `
+            CREATE TABLE IF NOT EXISTS message (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                channelId TEXT NOT NULL UNIQUE,
+                messageId TEXT NOT NULL
+            )
+        `;
         this.db.run(createTableQuery, (err) => {
             if (err) {
                 logger.error(`Error creating table: ${err}`);
@@ -71,6 +80,13 @@ class Database {
                 logger.info("Table 'checkURLS' is ready.");
             }
         });
+        this.db.run(createTableQueryMessage, (err) => {
+            if (err) {
+                logger.error(`Error creating table: ${err}`);
+            } else {
+                logger.info("Table 'message' is ready.");
+            }
+        });
     }
 
     public async createTicket(data: TicketCreateInterface) {
@@ -84,6 +100,11 @@ class Database {
     public async createUrls(data: URLCreateInterface) {
         const query = 'INSERT INTO urls (url, createdAt, userID) VALUES (?, ?, ?)';
         this.db.run(query, [data.url, new Date(), data.userID]);
+    }
+    
+    public async createMessage(data: MessageCreateInterface) {
+        const query = 'INSERT INTO message (channelId, messageId) VALUES (?, ?)';
+        this.db.run(query, [data.channelId, data.messageId]);
     }
 
     public async removeUrls(data: URLRemoveInterface) {
@@ -141,6 +162,13 @@ class Database {
                     resolve(row);
                 }
             });
+        });
+    }
+
+    public async getMessageByChannelId(channelId: string): Promise<any> {
+        const query = 'SELECT * FROM message WHERE channelId = ?';
+        return new Promise((resolve, reject) => {
+            this.db.get(query, [channelId], (err, row) => { if (err) { reject(err); } else { resolve(row); } });
         });
     }
 

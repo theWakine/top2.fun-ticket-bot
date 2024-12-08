@@ -1,8 +1,7 @@
-import { User } from "discord.js";
-import { AppConfig } from "../../../configs/app.config";
-import { loadConfig } from "../../../configs/app.config";
-import { Logger } from "../../../src/modules/logger/Logger";
-
+import { AppConfig } from "@/configs/app.config";
+import { loadConfig } from "@/configs/app.config";
+import { Logger } from "@/modules/logger/Logger";
+import Database from "@/database/database";
 let config: AppConfig;
 const logger = new Logger("logs/bot/utils/ticket.log");
 
@@ -14,7 +13,7 @@ export async function ReplaceKeys(text: string, keys: Record<string, string>) {
     return text.replace(/{{([^}}]+)}}/g, (match, p1) => keys[p1] || match);
 }
 
-export async function ThreadRoleAdd(interaction, thread, addRole: string) {
+export async function ThreadRoleAdd(interaction, thread, addRole: string[]) {
     if (!config) {
         await initializeConfig();
     }
