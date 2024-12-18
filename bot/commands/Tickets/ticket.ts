@@ -13,7 +13,7 @@ const database = new Database();
 export async function setupTicketSystem(client: any) {
     const config: AppConfig = await loadConfig();
     const channel = await client.channels.fetch(config.Client.Guild.init_channel);
-    
+
     const existingMessage = await database.getMessageByChannelId(channel.id);
 
     const embed_setup = await createEmbed(client, config.Thread.UI.Texts.init_embed_text);

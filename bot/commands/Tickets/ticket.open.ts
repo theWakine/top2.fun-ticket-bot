@@ -5,29 +5,16 @@ import { createEmbed } from "@/modules/discord/utils/embed";
 import { ReplaceKeys, ThreadRoleAdd } from "@/bot/commands/Tickets/ticket.utils";
 import { RowBuilder } from "@/modules/discord/utils/button";
 
-export async function ticketOpen(client, interaction, database, category: string) {
-    const logger = new Logger("logs/bot/commands/ticket.log");
+async function TicketOpen(client, interaction, database, category: string) {
     const config: AppConfig = await loadConfig();
+    const logger = new Logger("logs/bot/commands/ticket.log");
+    const textChannel = interaction.guild?.channels.cache.get(config.Client.Guild.init_channel);
 
-    const ticket = await database.getTicketUserID({ userID: interaction.user.id });
-    if (ticket) {
-        const thread = client.channels.cache.get(ticket["ticketID"]);
-
-        const error_ticket_create_embed = await createEmbed(client, await ReplaceKeys(config.Thread.UI.Texts.already_open_message, {
-            user: `<@${interaction.user.id}>`,
-            existingTicket: `<#${ticket["ticketID"]}>`
-        }));
-
-        await interaction.reply({ embeds: [error_ticket_create_embed], ephemeral: true });
-        return;
-    } else {
-        const textChannel = interaction.guild?.channels.cache.get(config.Client.Guild.init_channel);
-
-        if (textChannel && textChannel.isTextBased()) {
-            const textChannelAsText = textChannel as TextChannel;
-            let moder_role: string[];
-            if (category === "ticket") {
-                category = config.Thread.Categories.ticket;
+    if (textChannel && textChannel.isTextBased()) {
+        const textChannelAsText = textChannel as TextChannel;
+        let moder_role: string[];
+        if (category === "ticket") {
+            category = config.Thread.Categories.ticket;
                 moder_role = config.Client.Role.ticket_moderator;
             } else if (category === "report") {
                 category = config.Thread.Categories.report;
@@ -40,7 +27,7 @@ export async function ticketOpen(client, interaction, database, category: string
                 moder_role = [""];
             }
 
-            const thread = await textChannelAsText.threads.create({
+        const thread = await textChannelAsText.threads.create({
                 name: await ReplaceKeys(config.Thread.Arguments.name_default, { user: interaction.user.username, category: category }),
                 autoArchiveDuration: config.Thread.Arguments.auto_archive_duration,
                 type: ChannelType.PrivateThread as any,
@@ -74,5 +61,30 @@ export async function ticketOpen(client, interaction, database, category: string
         } else {
             logger.error("Не удалось найти текстовый канал или канал не поддерживает треды.");
         }
+    }
+
+export async function ticketOpen(client, interaction, database, category: string) {
+    const logger = new Logger("logs/bot/commands/ticket.log");
+    const config: AppConfig = await loadConfig();
+
+    const ticket = await database.getTicketUserID({ userID: interaction.user.id });
+
+    if (ticket) {
+
+        const ticket_from_discord = interaction.guild?.channels.cache.get(ticket["ticketID"]);
+        if (!ticket_from_discord) {
+            await database.closeTicket({userID: interaction.user.id})
+            await TicketOpen(client, interaction, database, category)
+            return;
+        }
+        const error_ticket_create_embed = await createEmbed(client, await ReplaceKeys(config.Thread.UI.Texts.already_open_message, {
+            user: `<@${interaction.user.id}>`,
+            existingTicket: `<#${ticket["ticketID"]}>`
+        }));
+
+        await interaction.reply({ embeds: [error_ticket_create_embed], ephemeral: true });
+        return;
+    } else {
+        await TicketOpen(client, interaction, database, category)
     }
 }
